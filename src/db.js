@@ -19,6 +19,7 @@ db.exec(`
     name          TEXT    NOT NULL,
     email         TEXT    NOT NULL UNIQUE,
     password_hash TEXT    NOT NULL,
+    is_admin      INTEGER NOT NULL DEFAULT 0,
     created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
   );
 
@@ -41,6 +42,8 @@ db.exec(`
     user_id          INTEGER REFERENCES users(id),
     total_cents      INTEGER NOT NULL,
     status           TEXT    NOT NULL DEFAULT 'paid',
+    payment_method   TEXT    NOT NULL DEFAULT 'manual',
+    payment_id       TEXT,
     shipping_name    TEXT    NOT NULL,
     shipping_email   TEXT    NOT NULL,
     shipping_address TEXT    NOT NULL,
@@ -62,5 +65,16 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_orders_user      ON orders(user_id);
   CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 `);
+
+function ensureColumn(table, column, definition) {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!cols.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+
+ensureColumn('users', 'is_admin', 'INTEGER NOT NULL DEFAULT 0');
+ensureColumn('orders', 'payment_method', "TEXT NOT NULL DEFAULT 'manual'");
+ensureColumn('orders', 'payment_id', 'TEXT');
 
 module.exports = db;

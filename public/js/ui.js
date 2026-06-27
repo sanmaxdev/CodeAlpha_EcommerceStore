@@ -131,8 +131,11 @@
     const user = window.api.getUser();
     const loggedIn = window.api.isLoggedIn();
 
+    const isAdmin = loggedIn && user && user.isAdmin;
+    const adminLink = isAdmin ? `<a class="btn btn-outline btn-sm" href="/admin.html">Admin</a>` : '';
     const account = loggedIn
-      ? `<a class="account-chip" href="/orders.html" title="My account">
+      ? `${adminLink}
+         <a class="account-chip" href="/orders.html" title="My account">
            <span class="avatar">${escapeHtml((user.name || '?').charAt(0).toUpperCase())}</span>
            <span class="acc-name">${escapeHtml((user.name || '').split(' ')[0])}</span>
          </a>
@@ -180,6 +183,7 @@
         ${cats.map((c) => `<a class="mn-sub" href="/shop.html?category=${c}">${c}</a>`).join('')}
         <a href="/contact.html">Contact ${icon('arrow', 16)}</a>
         <a href="/orders.html">My orders ${icon('arrow', 16)}</a>
+        ${isAdmin ? '<a href="/admin.html">Admin ' + icon('arrow', 16) + '</a>' : ''}
         ${loggedIn ? '' : '<a href="/login.html">Log in ' + icon('arrow', 16) + '</a>'}
       </div>`;
 

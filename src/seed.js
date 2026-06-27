@@ -206,8 +206,7 @@ function seed() {
   }
 
   const demoEmail = 'demo@loomwell.co';
-  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(demoEmail);
-  if (!existing) {
+  if (!db.prepare('SELECT id FROM users WHERE email = ?').get(demoEmail)) {
     const hash = bcrypt.hashSync('demo1234', 10);
     db.prepare('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)').run(
       'Demo Shopper',
@@ -215,6 +214,17 @@ function seed() {
       hash
     );
     console.log(`Created demo account: ${demoEmail} / demo1234`);
+  }
+
+  const adminEmail = 'admin@loomwell.co';
+  if (!db.prepare('SELECT id FROM users WHERE email = ?').get(adminEmail)) {
+    const hash = bcrypt.hashSync('admin1234', 10);
+    db.prepare('INSERT INTO users (name, email, password_hash, is_admin) VALUES (?, ?, ?, 1)').run(
+      'Store Admin',
+      adminEmail,
+      hash
+    );
+    console.log(`Created admin account: ${adminEmail} / admin1234`);
   }
 }
 

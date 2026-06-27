@@ -12,7 +12,7 @@ function signToken(user) {
 
 function publicUser(user) {
   if (!user) return null;
-  return { id: user.id, name: user.name, email: user.email };
+  return { id: user.id, name: user.name, email: user.email, isAdmin: !!user.is_admin };
 }
 
 function userFromToken(req) {
@@ -45,4 +45,13 @@ function optionalAuth(req, res, next) {
   next();
 }
 
-module.exports = { signToken, publicUser, requireAuth, optionalAuth, JWT_SECRET };
+function requireAdmin(req, res, next) {
+  requireAuth(req, res, () => {
+    if (!req.user.is_admin) {
+      return res.status(403).json({ error: 'Admin access required.' });
+    }
+    next();
+  });
+}
+
+module.exports = { signToken, publicUser, requireAuth, optionalAuth, requireAdmin, JWT_SECRET };

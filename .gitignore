@@ -11,6 +11,9 @@ node_modules/
 *.sqlite3
 data/
 
+# Admin-uploaded product images
+public/uploads/
+
 # Logs
 *.log
 npm-debug.log*

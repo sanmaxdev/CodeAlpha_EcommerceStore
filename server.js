@@ -9,6 +9,8 @@ const seed = require('./src/seed');
 const authRoutes = require('./src/routes/auth');
 const productRoutes = require('./src/routes/products');
 const orderRoutes = require('./src/routes/orders');
+const adminRoutes = require('./src/routes/admin');
+const paymentRoutes = require('./src/routes/payments');
 
 seed();
 
@@ -20,6 +22,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 

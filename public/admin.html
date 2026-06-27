@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Loomwell</title>
+  <meta name="robots" content="noindex" />
+  <script>document.documentElement.dataset.theme=localStorage.getItem('loomwell_theme')||'light';</script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div id="admin-root">
+    <div class="admin-bar">
+      <div class="admin-bar-inner">
+        <a class="brand" href="/admin.html">Loomwell<span class="tag">Admin</span></a>
+        <div class="spacer"></div>
+        <a class="adm-link" href="/index.html" target="_blank" rel="noopener">View store ↗</a>
+        <button class="adm-link" id="admin-logout" style="background:none;border:none;cursor:pointer">Log out</button>
+      </div>
+    </div>
+
+    <nav class="admin-tabs">
+      <button class="admin-tab active" data-tab="dashboard">Dashboard</button>
+      <button class="admin-tab" data-tab="products">Products</button>
+      <button class="admin-tab" data-tab="orders">Orders</button>
+    </nav>
+
+    <main class="admin-main">
+      <section class="admin-panel active" id="panel-dashboard">
+        <div class="admin-head"><h1>Dashboard</h1></div>
+        <div class="stat-cards" id="stat-cards"></div>
+        <div class="admin-head" style="margin-top:32px"><h1 style="font-size:1.2rem">Recent orders</h1></div>
+        <div class="atable-wrap" id="recent-orders"></div>
+      </section>
+
+      <section class="admin-panel" id="panel-products">
+        <div class="admin-head">
+          <h1>Products</h1>
+          <button class="btn btn-primary" id="add-product-btn">Add product</button>
+        </div>
+        <div class="atable-wrap" id="products-table"></div>
+      </section>
+
+      <section class="admin-panel" id="panel-orders">
+        <div class="admin-head"><h1>Orders</h1></div>
+        <div class="atable-wrap" id="orders-table"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="admin-modal" id="product-modal">
+    <div class="admin-dialog">
+      <div class="admin-dialog-head">
+        <h2 id="modal-title">Add product</h2>
+        <button class="icon-btn" id="modal-close" aria-label="Close">✕</button>
+      </div>
+      <div class="admin-dialog-body">
+        <div class="alert error" id="product-alert"></div>
+        <form id="product-form" novalidate>
+          <input type="hidden" id="p-id" />
+          <div class="field">
+            <label for="p-name">Name</label>
+            <input id="p-name" name="name" required />
+          </div>
+          <div class="form-row-3">
+            <div class="field">
+              <label for="p-category">Category</label>
+              <input id="p-category" name="category" list="cat-list" required />
+              <datalist id="cat-list"></datalist>
+            </div>
+            <div class="field">
+              <label for="p-price">Price (USD)</label>
+              <input id="p-price" name="price" type="number" step="0.01" min="0" required />
+            </div>
+            <div class="field">
+              <label for="p-stock">Stock</label>
+              <input id="p-stock" name="stock" type="number" min="0" value="0" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="p-rating">Rating (0-5)</label>
+              <input id="p-rating" name="rating" type="number" step="0.1" min="0" max="5" value="4.5" />
+            </div>
+            <div class="field" style="justify-content:flex-end">
+              <label class="check-row"><input type="checkbox" id="p-featured" /> Featured on storefront</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="p-description">Description</label>
+            <textarea id="p-description" name="description" rows="3"></textarea>
+          </div>
+          <div class="field">
+            <label for="p-image">Image</label>
+            <div class="upload-row">
+              <img class="upload-preview" id="p-preview" alt="" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'/>" />
+              <input id="p-image" name="image" placeholder="/images/... or https://..." style="flex:1" />
+              <label class="btn btn-outline btn-sm" style="cursor:pointer">
+                Upload<input type="file" id="p-file" accept="image/*" hidden />
+              </label>
+            </div>
+            <span class="hint" id="upload-hint"></span>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg" type="submit" id="product-submit">Save product</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

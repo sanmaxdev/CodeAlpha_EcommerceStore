@@ -72,5 +72,7 @@
     request,
     get: (p, auth) => request(p, { auth }),
     post: (p, body, auth) => request(p, { method: 'POST', body, auth }),
+    put: (p, body, auth) => request(p, { method: 'PUT', body, auth }),
+    del: (p, auth) => request(p, { method: 'DELETE', auth }),
   };
 })();
