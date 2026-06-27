@@ -141,11 +141,11 @@
         <div class="header-inner">
           <a class="brand" href="/index.html" aria-label="Loomwell home">Loomwell</a>
           <nav class="header-nav">
-            <a href="/index.html" class="${active === 'shop' ? 'active' : ''}">Shop</a>
-            <a href="/index.html?category=Shirts">Shirts</a>
-            <a href="/index.html?category=Dresses">Dresses</a>
-            <a href="/index.html?category=Footwear">Footwear</a>
-            <a href="/index.html?category=Accessories">Accessories</a>
+            <a href="/shop.html" class="${active === 'shop' ? 'active' : ''}">Shop</a>
+            <a href="/shop.html?category=Shirts">Shirts</a>
+            <a href="/shop.html?category=Dresses">Dresses</a>
+            <a href="/shop.html?category=Footwear">Footwear</a>
+            <a href="/shop.html?category=Accessories">Accessories</a>
           </nav>
           <form class="header-search" role="search" id="header-search">
             <span class="sicon">${icon('search', 16)}</span>
@@ -169,7 +169,7 @@
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         const q = input.value.trim();
-        location.href = '/index.html' + (q ? '?search=' + encodeURIComponent(q) : '');
+        location.href = '/shop.html' + (q ? '?search=' + encodeURIComponent(q) : '');
       });
     }
     const logoutBtn = document.getElementById('logout-btn');
@@ -204,10 +204,11 @@
           </div>
           <nav class="footer-col">
             <h4>Shop</h4>
-            <a href="/index.html?category=Shirts">Shirts</a>
-            <a href="/index.html?category=Dresses">Dresses</a>
-            <a href="/index.html?category=Footwear">Footwear</a>
-            <a href="/index.html?category=Accessories">Accessories</a>
+            <a href="/shop.html">All products</a>
+            <a href="/shop.html?category=Shirts">Shirts</a>
+            <a href="/shop.html?category=Dresses">Dresses</a>
+            <a href="/shop.html?category=Footwear">Footwear</a>
+            <a href="/shop.html?category=Accessories">Accessories</a>
           </nav>
           <nav class="footer-col">
             <h4>Account</h4>
@@ -229,8 +230,8 @@
           <span>&copy; ${currentYear()} Loomwell</span>
           <div class="theme-switch" role="group" aria-label="Color theme">
             <span class="ts-glider" aria-hidden="true"></span>
-            <button class="ts-opt" data-val="light" type="button">${icon('sun', 15)} Light</button>
-            <button class="ts-opt" data-val="dark" type="button">${icon('moon', 15)} Dark</button>
+            <button class="ts-opt" data-val="light" type="button" title="Light mode" aria-label="Light mode">${icon('sun', 16)}</button>
+            <button class="ts-opt" data-val="dark" type="button" title="Dark mode" aria-label="Dark mode">${icon('moon', 16)}</button>
           </div>
           <span>Free shipping over $150 · 30-day returns</span>
         </div>

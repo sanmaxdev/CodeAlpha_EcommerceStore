@@ -38,7 +38,7 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS orders (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id          INTEGER NOT NULL REFERENCES users(id),
+    user_id          INTEGER REFERENCES users(id),
     total_cents      INTEGER NOT NULL,
     status           TEXT    NOT NULL DEFAULT 'paid',
     shipping_name    TEXT    NOT NULL,

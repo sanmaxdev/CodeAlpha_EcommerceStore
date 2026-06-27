@@ -10,13 +10,15 @@ Shoppers can browse a clothing catalog, view product details, manage a cart, reg
 
 ## Features
 
-- **Product listings** with category filters (Shirts, Dresses, Footwear, Accessories), search, and sorting
+- **Landing page** funnelling to a dedicated shop, with featured products and customer testimonials
+- **Dedicated Shop page** with rich filters: category, price range, minimum rating, in-stock-only, search, and sorting
 - **Product details page** with quantity selector, stock status, and related items
 - **Shopping cart** (add / update quantity / remove) with live totals and a free-shipping threshold
+- **Guest checkout** — buy without an account, or log in for faster checkout and order history
 - **User registration & login** with hashed passwords (bcrypt) and JWT sessions
 - **Order processing** — checkout validates stock, computes totals on the server, decrements inventory, and saves the order
-- **Order history** for the logged-in user
-- Responsive UI with automatic **light / dark mode**, loading skeletons, and empty / error states
+- **Order history** for logged-in users
+- Responsive UI with a **light / dark theme toggle** (light by default), subtle scroll animations, loading skeletons, and empty / error states
 
 ---
 
@@ -77,10 +79,11 @@ CodeAlpha_EcommerceStore/
 │       ├── products.js     # list / detail / categories
 │       └── orders.js       # create / list / get orders
 ├── public/                 # Frontend (served statically)
-│   ├── index.html          # Storefront
+│   ├── index.html          # Landing page
+│   ├── shop.html           # Shop with filters
 │   ├── product.html        # Product detail
 │   ├── cart.html           # Cart
-│   ├── checkout.html       # Checkout
+│   ├── checkout.html       # Checkout (guest or signed in)
 │   ├── login.html          # Login
 │   ├── register.html       # Register
 │   ├── orders.html         # Order history
@@ -113,13 +116,15 @@ Base URL: `http://localhost:4000/api`
 | GET    | `/products/categories` | Distinct categories with counts                                |
 | GET    | `/products/:id`        | Single product + related items                                 |
 
-### Orders *(require `Authorization: Bearer <token>`)*
+### Orders
 
-| Method | Endpoint      | Body                                           | Description           |
-| ------ | ------------- | ---------------------------------------------- | --------------------- |
-| POST   | `/orders`     | `{ items: [{productId, quantity}], shipping }` | Place an order        |
-| GET    | `/orders`     | —                                              | Current user's orders |
-| GET    | `/orders/:id` | —                                              | A single order        |
+| Method | Endpoint      | Auth          | Body                                           | Description                          |
+| ------ | ------------- | ------------- | ---------------------------------------------- | ------------------------------------ |
+| POST   | `/orders`     | Optional      | `{ items: [{productId, quantity}], shipping }` | Place an order (guest or signed in)  |
+| GET    | `/orders`     | Required      | —                                              | Current user's orders                |
+| GET    | `/orders/:id` | Required      | —                                              | A single order                       |
+
+Guest orders are stored with a null `user_id`; signed-in orders are linked to the account and appear in order history.
 
 ---
 

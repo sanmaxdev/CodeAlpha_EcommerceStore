@@ -7,18 +7,14 @@
   const formWrap = document.getElementById('checkout-form-wrap');
   const summaryEl = document.getElementById('checkout-summary');
 
-  function guardAuthAndCart() {
-    if (!window.api.isLoggedIn()) {
-      location.href = '/login.html?redirect=' + encodeURIComponent('/checkout.html');
-      return false;
-    }
+  function guardCart() {
     if (window.Cart.items().length === 0) {
       formWrap.innerHTML = `
         <div class="state">
           <div class="state-icon">${window.UI.icon('cart', 22)}</div>
           <h3>Nothing to check out</h3>
           <p>Your cart is empty.</p>
-          <a class="btn btn-primary" href="/index.html" style="margin-top:14px">Browse the shop</a>
+          <a class="btn btn-primary" href="/shop.html" style="margin-top:14px">Browse the shop</a>
         </div>`;
       summaryEl.innerHTML = '';
       return false;
@@ -50,10 +46,17 @@
 
   function renderForm() {
     const user = window.api.getUser() || {};
+    const loggedIn = window.api.isLoggedIn();
+    const guestNote = loggedIn
+      ? `<div class="checkout-note">Checking out as <strong>${window.UI.escapeHtml(user.email || '')}</strong></div>`
+      : `<div class="checkout-note">Checking out as a guest.
+           <a href="/login.html?redirect=${encodeURIComponent('/checkout.html')}">Log in</a>
+           for faster checkout and order history.</div>`;
     formWrap.innerHTML = `
       <div class="panel">
         <h1>Checkout</h1>
         <p class="sub">Enter where we should ship your order.</p>
+        ${guestNote}
         <div class="alert error" id="checkout-alert"></div>
         <form id="checkout-form" novalidate>
           <div class="field">
@@ -116,7 +119,7 @@
     btn.disabled = true;
     btn.textContent = 'Placing order...';
     try {
-      const { order } = await window.api.post('/orders', { items, shipping }, true);
+      const { order } = await window.api.post('/orders', { items, shipping }, window.api.isLoggedIn());
       window.Cart.clear();
       showConfirmation(order);
     } catch (err) {
@@ -129,6 +132,15 @@
 
   function showConfirmation(order) {
     summaryEl.innerHTML = '';
+    const loggedIn = window.api.isLoggedIn();
+    const actions = loggedIn
+      ? `<a class="btn btn-primary" href="/orders.html">View my orders</a>
+         <a class="btn btn-outline" href="/shop.html">Keep shopping</a>`
+      : `<a class="btn btn-primary" href="/shop.html">Keep shopping</a>
+         <a class="btn btn-outline" href="/register.html">Create an account</a>`;
+    const guestLine = loggedIn
+      ? ''
+      : `<p class="muted" style="font-size:.88rem;margin-top:4px">A confirmation has been sent to ${window.UI.escapeHtml(order.shipping.email)}.</p>`;
     formWrap.innerHTML = `
       <div class="panel center">
         <div class="state-icon" style="background:var(--accent-soft);color:var(--accent-ink);width:64px;height:64px">
@@ -137,9 +149,9 @@
         <h1 style="margin-top:16px">Order confirmed</h1>
         <p class="sub">Thanks, ${window.UI.escapeHtml(order.shipping.name)}. Your order
           <strong>#${order.id}</strong> totalling <strong>${window.UI.money(order.total)}</strong> is on its way.</p>
+        ${guestLine}
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px">
-          <a class="btn btn-primary" href="/orders.html">View my orders</a>
-          <a class="btn btn-outline" href="/index.html">Keep shopping</a>
+          ${actions}
         </div>
       </div>`;
     window.UI.updateCartBadge();
@@ -149,7 +161,7 @@
   function init() {
     window.UI.renderHeader('');
     window.UI.renderFooter();
-    if (!guardAuthAndCart()) return;
+    if (!guardCart()) return;
     renderForm();
     renderSummary();
   }

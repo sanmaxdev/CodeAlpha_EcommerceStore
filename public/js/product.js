@@ -14,7 +14,7 @@
         <div class="state-icon">${window.UI.icon('box', 22)}</div>
         <h3>Product unavailable</h3>
         <p>${window.UI.escapeHtml(message)}</p>
-        <a class="btn btn-outline" href="/index.html" style="margin-top:14px">Back to shop</a>
+        <a class="btn btn-outline" href="/shop.html" style="margin-top:14px">Back to shop</a>
       </div>`;
   }
 

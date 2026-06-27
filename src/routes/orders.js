@@ -2,11 +2,9 @@
 
 const express = require('express');
 const db = require('../db');
-const { requireAuth } = require('../auth');
+const { requireAuth, optionalAuth } = require('../auth');
 
 const router = express.Router();
-
-router.use(requireAuth);
 
 function orderToApi(order, items) {
   return {
@@ -30,7 +28,7 @@ function orderToApi(order, items) {
   };
 }
 
-router.post('/', (req, res) => {
+router.post('/', optionalAuth, (req, res) => {
   const items = Array.isArray(req.body.items) ? req.body.items : [];
   const shipping = req.body.shipping || {};
 
@@ -65,6 +63,7 @@ router.post('/', (req, res) => {
     lineItems.push({ product, qty });
   }
 
+  const userId = req.user ? req.user.id : null;
   const createOrder = db.transaction(() => {
     const orderInfo = db
       .prepare(
@@ -72,7 +71,7 @@ router.post('/', (req, res) => {
          VALUES (?, ?, 'paid', ?, ?, ?, ?, ?)`
       )
       .run(
-        req.user.id,
+        userId,
         totalCents,
         String(shipping.name).trim(),
         String(shipping.email).trim(),
@@ -102,7 +101,7 @@ router.post('/', (req, res) => {
   res.status(201).json({ order: orderToApi(order, orderItems) });
 });
 
-router.get('/', (req, res) => {
+router.get('/', requireAuth, (req, res) => {
   const orders = db
     .prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC')
     .all(req.user.id);
@@ -112,7 +111,7 @@ router.get('/', (req, res) => {
   res.json({ orders: result });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', requireAuth, (req, res) => {
   const order = db
     .prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?')
     .get(Number(req.params.id), req.user.id);

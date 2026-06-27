@@ -15,25 +15,34 @@ function publicUser(user) {
   return { id: user.id, name: user.name, email: user.email };
 }
 
-function requireAuth(req, res, next) {
+function userFromToken(req) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-
-  if (!token) {
-    return res.status(401).json({ error: 'Authentication required. Please log in.' });
-  }
-
+  if (!token) return null;
   try {
     const payload = jwt.verify(token, JWT_SECRET);
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(payload.sub);
-    if (!user) {
-      return res.status(401).json({ error: 'Account no longer exists.' });
-    }
-    req.user = user;
-    next();
+    return db.prepare('SELECT * FROM users WHERE id = ?').get(payload.sub) || null;
   } catch (err) {
-    return res.status(401).json({ error: 'Session expired or invalid. Please log in again.' });
+    return null;
   }
 }
 
-module.exports = { signToken, publicUser, requireAuth, JWT_SECRET };
+function requireAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  if (!header.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Authentication required. Please log in.' });
+  }
+  const user = userFromToken(req);
+  if (!user) {
+    return res.status(401).json({ error: 'Session expired or invalid. Please log in again.' });
+  }
+  req.user = user;
+  next();
+}
+
+function optionalAuth(req, res, next) {
+  req.user = userFromToken(req);
+  next();
+}
+
+module.exports = { signToken, publicUser, requireAuth, optionalAuth, JWT_SECRET };

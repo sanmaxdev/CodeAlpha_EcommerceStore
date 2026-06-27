@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop - Loomwell</title>
+  <meta name="description" content="Shop the full Loomwell collection. Filter by category, price, rating, and availability." />
+  <script>document.documentElement.dataset.theme=localStorage.getItem('loomwell_theme')||'light';</script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div id="app-header"></div>
+
+  <main class="wrap">
+    <div class="shop-head">
+      <div>
+        <h1 id="shop-title">Shop all</h1>
+        <p class="muted" id="shop-count">Loading the collection…</p>
+      </div>
+      <button class="btn btn-outline btn-sm filters-toggle" id="filters-toggle">Filters</button>
+    </div>
+
+    <div class="shop-layout">
+      <aside class="filters" id="filters">
+        <div class="filter-group">
+          <label class="filter-label" for="f-search">Search</label>
+          <input id="f-search" class="filter-search" type="search" placeholder="Search products" aria-label="Search products" />
+        </div>
+
+        <div class="filter-group">
+          <h4>Category</h4>
+          <div class="filter-list" id="f-category">
+            <button class="filter-opt active" data-cat="All">All</button>
+            <button class="filter-opt" data-cat="Shirts">Shirts</button>
+            <button class="filter-opt" data-cat="Dresses">Dresses</button>
+            <button class="filter-opt" data-cat="Footwear">Footwear</button>
+            <button class="filter-opt" data-cat="Accessories">Accessories</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Price</h4>
+          <div class="filter-list" id="f-price">
+            <button class="filter-opt active" data-price="any">Any price</button>
+            <button class="filter-opt" data-price="under75">Under $75</button>
+            <button class="filter-opt" data-price="75to125">$75 – $125</button>
+            <button class="filter-opt" data-price="over125">Over $125</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Rating</h4>
+          <div class="filter-list" id="f-rating">
+            <button class="filter-opt active" data-rating="any">Any rating</button>
+            <button class="filter-opt" data-rating="4">4.0 &amp; up</button>
+            <button class="filter-opt" data-rating="4.5">4.5 &amp; up</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="switch-row">
+            <input type="checkbox" id="f-instock" /> <span>In stock only</span>
+          </label>
+        </div>
+
+        <button class="btn btn-ghost btn-sm" id="f-clear" style="align-self:flex-start">Clear all filters</button>
+      </aside>
+
+      <div class="shop-main">
+        <div class="shop-toolbar">
+          <span class="muted" id="shop-results"></span>
+          <select class="sort-select" id="sort-select" aria-label="Sort products">
+            <option value="default">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating">Top rated</option>
+            <option value="name">Name: A to Z</option>
+          </select>
+        </div>
+        <div class="product-grid" id="product-grid"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="app-footer"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/shop.js"></script>
+</body>
+</html>

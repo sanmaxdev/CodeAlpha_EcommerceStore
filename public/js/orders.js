@@ -28,7 +28,7 @@
             <div class="state-icon">${window.UI.icon('box', 22)}</div>
             <h3>No orders yet</h3>
             <p>When you place an order it will show up here.</p>
-            <a class="btn btn-primary" href="/index.html" style="margin-top:14px">Browse the shop</a>
+            <a class="btn btn-primary" href="/shop.html" style="margin-top:14px">Browse the shop</a>
           </div>`;
         return;
       }

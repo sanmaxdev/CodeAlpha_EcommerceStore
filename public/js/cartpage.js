@@ -16,7 +16,7 @@
           <div class="state-icon">${window.UI.icon('cart', 22)}</div>
           <h3>Your cart is empty</h3>
           <p>Browse the shop and add a few pieces you like.</p>
-          <a class="btn btn-primary" href="/index.html" style="margin-top:14px">Start shopping</a>
+          <a class="btn btn-primary" href="/shop.html" style="margin-top:14px">Start shopping</a>
         </div>`;
       summaryEl.innerHTML = '';
       return;
@@ -68,7 +68,7 @@
         <a class="btn btn-primary btn-block btn-lg" href="/checkout.html">
           Checkout ${window.UI.icon('arrow', 16)}
         </a>
-        <a class="btn btn-ghost btn-block" href="/index.html" style="margin-top:8px">Continue shopping</a>
+        <a class="btn btn-ghost btn-block" href="/shop.html" style="margin-top:8px">Continue shopping</a>
         <p class="note">Free shipping over $150 · 30-day returns</p>
       </div>`;
   }
