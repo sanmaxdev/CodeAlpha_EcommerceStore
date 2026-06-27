@@ -100,6 +100,7 @@
       return;
     }
     relatedGrid.innerHTML = related.map(window.UI.productCard).join('');
+    window.UI.revealStagger(relatedGrid);
   }
 
   function init() {

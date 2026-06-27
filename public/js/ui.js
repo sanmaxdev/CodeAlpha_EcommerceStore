@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  const THEME_KEY = 'loomwell_theme';
+
   const money = (n) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 
@@ -26,9 +28,77 @@
     check: '<path d="M20 6 9 17l-5-5"/>',
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     trash: '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
   };
   function icon(name, size = 20) {
     return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+  }
+
+  function getTheme() {
+    return localStorage.getItem(THEME_KEY) || 'light';
+  }
+  function applyTheme(t) {
+    document.documentElement.dataset.theme = t;
+  }
+  function setTheme(t) {
+    const html = document.documentElement;
+    html.classList.add('theme-anim');
+    localStorage.setItem(THEME_KEY, t);
+    applyTheme(t);
+    updateThemeSwitch();
+    window.clearTimeout(setTheme._t);
+    setTheme._t = window.setTimeout(() => html.classList.remove('theme-anim'), 440);
+  }
+  function updateThemeSwitch() {
+    const sw = document.querySelector('.theme-switch');
+    if (!sw) return;
+    const t = getTheme();
+    sw.dataset.active = t;
+    sw.querySelectorAll('.ts-opt').forEach((o) => o.classList.toggle('active', o.dataset.val === t));
+  }
+
+  let revealObserver = null;
+  function ensureObserver() {
+    if (revealObserver || !('IntersectionObserver' in window)) return revealObserver;
+    revealObserver = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            obs.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+    return revealObserver;
+  }
+  function observeReveals(root) {
+    const scope = root || document;
+    const els = scope.querySelectorAll('.reveal:not(.in)');
+    const obs = ensureObserver();
+    if (!obs) {
+      els.forEach((el) => el.classList.add('in'));
+      return;
+    }
+    els.forEach((el) => obs.observe(el));
+  }
+  function revealStagger(container) {
+    if (!container) return;
+    Array.from(container.children).forEach((el, i) => {
+      el.classList.add('reveal');
+      el.style.transitionDelay = Math.min(i, 8) * 55 + 'ms';
+    });
+    observeReveals(container);
+  }
+
+  function initHeaderScroll() {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 4);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
 
   function toast(message, type = 'default', ms = 2600) {
@@ -52,6 +122,7 @@
   }
 
   function renderHeader(active) {
+    applyTheme(getTheme());
     const host = document.getElementById('app-header');
     if (!host) return;
     const user = window.api.getUser();
@@ -110,6 +181,7 @@
       });
     }
     updateCartBadge();
+    initHeaderScroll();
   }
 
   function updateCartBadge() {
@@ -155,6 +227,11 @@
         </div>
         <div class="wrap footer-bottom">
           <span>&copy; ${currentYear()} Loomwell</span>
+          <div class="theme-switch" role="group" aria-label="Color theme">
+            <span class="ts-glider" aria-hidden="true"></span>
+            <button class="ts-opt" data-val="light" type="button">${icon('sun', 15)} Light</button>
+            <button class="ts-opt" data-val="dark" type="button">${icon('moon', 15)} Dark</button>
+          </div>
           <span>Free shipping over $150 · 30-day returns</span>
         </div>
       </footer>`;
@@ -166,6 +243,13 @@
         news.reset();
         toast('You are on the list. Welcome.', 'success');
       });
+    }
+    const sw = host.querySelector('.theme-switch');
+    if (sw) {
+      sw.querySelectorAll('.ts-opt').forEach((o) =>
+        o.addEventListener('click', () => setTheme(o.dataset.val))
+      );
+      updateThemeSwitch();
     }
   }
 
@@ -231,5 +315,9 @@
     updateCartBadge,
     productCard,
     initAddToCart,
+    getTheme,
+    setTheme,
+    observeReveals,
+    revealStagger,
   };
 })();

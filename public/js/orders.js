@@ -59,6 +59,7 @@
         </div>`
         )
         .join('');
+      window.UI.revealStagger(root);
     } catch (err) {
       root.innerHTML = `
         <div class="state">

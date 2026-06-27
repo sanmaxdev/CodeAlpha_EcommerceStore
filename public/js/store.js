@@ -56,6 +56,7 @@
     try {
       const { products } = await window.api.get('/products?featured=true');
       featuredEl.innerHTML = products.slice(0, 4).map(window.UI.productCard).join('');
+      window.UI.revealStagger(featuredEl);
     } catch (e) {
       featuredEl.closest('.section').style.display = 'none';
     }
@@ -91,6 +92,7 @@
         return;
       }
       gridEl.innerHTML = products.map(window.UI.productCard).join('');
+      window.UI.revealStagger(gridEl);
     } catch (err) {
       gridEl.innerHTML = `
         <div class="state" style="grid-column: 1 / -1;">
@@ -116,6 +118,10 @@
         loadProducts();
       });
     }
+
+    window.UI.observeReveals(document);
+    const catGrid = document.querySelector('.cat-grid');
+    if (catGrid) window.UI.revealStagger(catGrid);
 
     loadCategories();
     loadFeatured();
