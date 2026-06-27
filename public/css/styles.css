@@ -140,6 +140,34 @@ button { font-family: inherit; cursor: pointer; }
   backdrop-filter: saturate(150%) blur(12px);
   border-bottom: 1px solid var(--border);
 }
+
+.site-header.header-overlay { position: fixed; left: 0; right: 0; }
+.site-header.header-overlay:not(.scrolled) {
+  background: transparent; backdrop-filter: none; border-color: transparent;
+}
+.header-overlay .brand, .header-overlay .header-nav a, .header-overlay .nav-dd-btn,
+.header-overlay .icon-btn, .header-overlay .btn-outline, .header-overlay .account-chip,
+.header-overlay .header-search input, .header-overlay .header-search .sicon {
+  transition: color 0.3s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.header-overlay:not(.scrolled) .brand { color: #fff; }
+.header-overlay:not(.scrolled) .header-nav a { color: rgba(255,255,255,0.82); }
+.header-overlay:not(.scrolled) .header-nav a:hover { color: #fff; }
+.header-overlay:not(.scrolled) .header-nav a::after { background: #fff; }
+.header-overlay:not(.scrolled) .header-nav a.active::after { background: #fff; }
+.header-overlay:not(.scrolled) .nav-dd-btn { color: rgba(255,255,255,0.82); }
+.header-overlay:not(.scrolled) .nav-dd-btn:hover { color: #fff; }
+.header-overlay:not(.scrolled) .icon-btn { color: #fff; }
+.header-overlay:not(.scrolled) .icon-btn:hover { background: rgba(255,255,255,0.16); }
+.header-overlay:not(.scrolled) .btn-outline { color: #fff; border-color: rgba(255,255,255,0.6); }
+.header-overlay:not(.scrolled) .btn-outline:hover { background: #fff; color: #16140f; border-color: #fff; }
+.header-overlay:not(.scrolled) .account-chip { color: #fff; border-color: rgba(255,255,255,0.4); }
+.header-overlay:not(.scrolled) .account-chip .avatar { background: #fff; color: #16140f; }
+.header-overlay:not(.scrolled) .header-search input {
+  background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); color: #fff;
+}
+.header-overlay:not(.scrolled) .header-search input::placeholder { color: rgba(255,255,255,0.72); }
+.header-overlay:not(.scrolled) .header-search .sicon { color: rgba(255,255,255,0.72); }
 .header-inner {
   height: var(--header-h); display: flex; align-items: center; gap: 24px;
   max-width: var(--maxw); margin-inline: auto; padding-inline: 24px;
@@ -265,6 +293,7 @@ button { font-family: inherit; cursor: pointer; }
 .hero-scrim {
   position: absolute; inset: 0;
   background:
+    linear-gradient(180deg, rgba(12,10,8,0.5) 0%, rgba(12,10,8,0.16) 13%, transparent 28%),
     linear-gradient(90deg, rgba(12,10,8,0.78) 0%, rgba(12,10,8,0.45) 42%, rgba(12,10,8,0.12) 70%, transparent 100%),
     linear-gradient(0deg, rgba(12,10,8,0.6) 0%, transparent 45%);
 }
