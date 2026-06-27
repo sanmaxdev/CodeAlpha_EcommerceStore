@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loomwell - Considered clothing, made to last</title>
+  <meta name="description" content="Loomwell is a small clothing label of shirts, dresses, footwear, and accessories chosen to last and priced fairly." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div id="app-header"></div>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">New season, in stock now</span>
+        <h1>Clothes you'll keep reaching for.</h1>
+        <p>A small, considered range of shirts, dresses, footwear, and accessories. Made to last, priced fairly.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="#catalog">Shop the collection</a>
+          <a class="btn btn-outline btn-lg" href="#new">See what's new</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><strong>16</strong><span>Pieces in stock</span></div>
+          <div class="stat"><strong>Free</strong><span>Shipping over $150</span></div>
+          <div class="stat"><strong>30-day</strong><span>Easy returns</span></div>
+        </div>
+      </div>
+      <div class="hero-media">
+        <img src="/images/products/tartan-shift-dress.webp" alt="The Highland Tartan Dress" />
+        <span class="hero-pill">The Highland Tartan Dress</span>
+      </div>
+    </section>
+
+    <section class="value-strip">
+      <div class="vs"><strong>Free shipping over $150</strong><span>On every order, every time</span></div>
+      <div class="vs"><strong>30-day returns</strong><span>Send it back, no fuss</span></div>
+      <div class="vs"><strong>Made to last</strong><span>Better materials, fair prices</span></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Shop by category</h2>
+          <p>Four edits, everything in stock.</p>
+        </div>
+      </div>
+      <div class="cat-grid">
+        <a class="cat-tile" href="/index.html?category=Shirts">
+          <img src="/images/products/flannel-check-shirt.webp" alt="Shirts" loading="lazy" />
+          <span class="cat-label">Shirts <span class="arr">→</span></span>
+        </a>
+        <a class="cat-tile" href="/index.html?category=Dresses">
+          <img src="/images/products/summer-tier-dress.webp" alt="Dresses" loading="lazy" />
+          <span class="cat-label">Dresses <span class="arr">→</span></span>
+        </a>
+        <a class="cat-tile" href="/index.html?category=Footwear">
+          <img src="/images/products/gold-strap-heel.webp" alt="Footwear" loading="lazy" />
+          <span class="cat-label">Footwear <span class="arr">→</span></span>
+        </a>
+        <a class="cat-tile" href="/index.html?category=Accessories">
+          <img src="/images/products/structured-tote.webp" alt="Accessories" loading="lazy" />
+          <span class="cat-label">Accessories <span class="arr">→</span></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="new">
+      <div class="section-head">
+        <div>
+          <h2>New this season</h2>
+          <p>A handful of pieces worth a closer look.</p>
+        </div>
+        <a class="btn btn-ghost" href="#catalog">View all →</a>
+      </div>
+      <div class="product-grid" id="featured-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="editorial">
+        <div class="editorial-copy">
+          <span class="eyebrow">Our approach</span>
+          <h2>Fewer, better pieces.</h2>
+          <p>We keep the range small on purpose. Every piece is chosen for the way it's made and the way it wears, so your wardrobe works harder with less in it.</p>
+          <a class="btn btn-outline" href="#catalog">Browse the collection</a>
+        </div>
+        <div class="editorial-media">
+          <img src="/images/products/pea-wrap-dress.webp" alt="The Polka Tea Dress" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="catalog">
+      <div class="section-head">
+        <div>
+          <h2>The collection</h2>
+          <p id="results-label">Browse everything in the shop.</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="chips" id="category-chips"></div>
+        <select class="sort-select" id="sort-select" aria-label="Sort products">
+          <option value="default">Sort: Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Top rated</option>
+          <option value="name">Name: A to Z</option>
+        </select>
+      </div>
+
+      <div class="product-grid" id="product-grid"></div>
+    </section>
+  </main>
+
+  <div id="app-footer"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/store.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+
+# SQLite database files (regenerated + seeded on first run)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
