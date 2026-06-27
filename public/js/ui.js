@@ -30,6 +30,9 @@
     trash: '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+    menu: '<path d="M3 6h18M3 12h18M3 18h18"/>',
+    close: '<path d="M18 6 6 18M6 6l12 12"/>',
+    chevron: '<path d="m6 9 6 6 6-6"/>',
   };
   function icon(name, size = 20) {
     return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
@@ -136,16 +139,26 @@
          <button class="icon-btn" id="logout-btn" title="Log out" aria-label="Log out">${icon('logout')}</button>`
       : `<a class="btn btn-outline btn-sm" href="/login.html">Log in</a>`;
 
+    const cats = ['Shirts', 'Dresses', 'Footwear', 'Accessories'];
+    const ddLinks = cats
+      .map((c) => `<a href="/shop.html?category=${c}">${c} ${icon('arrow', 14)}</a>`)
+      .join('');
+
     host.innerHTML = `
       <header class="site-header">
         <div class="header-inner">
           <a class="brand" href="/index.html" aria-label="Loomwell home">Loomwell</a>
           <nav class="header-nav">
             <a href="/shop.html" class="${active === 'shop' ? 'active' : ''}">Shop</a>
-            <a href="/shop.html?category=Shirts">Shirts</a>
-            <a href="/shop.html?category=Dresses">Dresses</a>
-            <a href="/shop.html?category=Footwear">Footwear</a>
-            <a href="/shop.html?category=Accessories">Accessories</a>
+            <span class="nav-dd">
+              <button class="nav-dd-btn" type="button" aria-haspopup="true">Categories ${icon('chevron', 14)}</button>
+              <div class="nav-dd-panel">
+                ${ddLinks}
+                <div class="dd-sep"></div>
+                <a href="/shop.html">All products ${icon('arrow', 14)}</a>
+              </div>
+            </span>
+            <a href="/contact.html" class="${active === 'contact' ? 'active' : ''}">Contact</a>
           </nav>
           <form class="header-search" role="search" id="header-search">
             <span class="sicon">${icon('search', 16)}</span>
@@ -157,9 +170,18 @@
               <span class="cart-badge" id="cart-badge" hidden>0</span>
             </a>
             ${account}
+            <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Menu" aria-expanded="false">${icon('menu')}</button>
           </div>
         </div>
-      </header>`;
+      </header>
+      <div class="mobile-nav" id="mobile-nav">
+        <a href="/shop.html">Shop ${icon('arrow', 16)}</a>
+        <div class="mn-label">Categories</div>
+        ${cats.map((c) => `<a class="mn-sub" href="/shop.html?category=${c}">${c}</a>`).join('')}
+        <a href="/contact.html">Contact ${icon('arrow', 16)}</a>
+        <a href="/orders.html">My orders ${icon('arrow', 16)}</a>
+        ${loggedIn ? '' : '<a href="/login.html">Log in ' + icon('arrow', 16) + '</a>'}
+      </div>`;
 
     const form = document.getElementById('header-search');
     if (form) {
@@ -178,6 +200,16 @@
         window.api.clearSession();
         toast('You have been logged out.');
         setTimeout(() => (location.href = '/index.html'), 600);
+      });
+    }
+    const menuBtn = document.getElementById('menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    if (menuBtn && mobileNav) {
+      menuBtn.addEventListener('click', () => {
+        const open = mobileNav.classList.toggle('open');
+        menuBtn.innerHTML = open ? icon('close') : icon('menu');
+        menuBtn.setAttribute('aria-expanded', String(open));
+        document.body.style.overflow = open ? 'hidden' : '';
       });
     }
     updateCartBadge();
@@ -201,6 +233,10 @@
           <div class="footer-brand">
             <a class="brand" href="/index.html">Loomwell</a>
             <p>Considered clothing and accessories, made to last and priced fairly.</p>
+            <form id="news-form" class="news-form">
+              <input type="email" name="email" placeholder="Email address" aria-label="Email address" required />
+              <button class="btn btn-primary" type="submit">Join</button>
+            </form>
           </div>
           <nav class="footer-col">
             <h4>Shop</h4>
@@ -211,20 +247,17 @@
             <a href="/shop.html?category=Accessories">Accessories</a>
           </nav>
           <nav class="footer-col">
-            <h4>Account</h4>
+            <h4>Help</h4>
+            <a href="/contact.html">Contact us</a>
+            <a href="/shipping-returns.html">Shipping &amp; returns</a>
             <a href="/orders.html">My orders</a>
-            <a href="/cart.html">Cart</a>
             <a href="/login.html">Log in</a>
-            <a href="/register.html">Create account</a>
           </nav>
-          <div class="footer-col footer-news">
-            <h4>Stay in the loop</h4>
-            <p>New arrivals and occasional offers. No spam.</p>
-            <form id="news-form" class="news-form">
-              <input type="email" name="email" placeholder="Email address" aria-label="Email address" required />
-              <button class="btn btn-primary" type="submit">Join</button>
-            </form>
-          </div>
+          <nav class="footer-col">
+            <h4>Company</h4>
+            <a href="/privacy.html">Privacy policy</a>
+            <a href="/terms.html">Terms of service</a>
+          </nav>
         </div>
         <div class="wrap footer-bottom">
           <span>&copy; ${currentYear()} Loomwell</span>

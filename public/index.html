@@ -9,31 +9,30 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
-<body>
+<body data-nav="">
   <div id="app-header"></div>
 
-  <main class="wrap">
-    <section class="hero">
-      <div class="hero-copy reveal">
-        <span class="eyebrow">New season, in stock now</span>
-        <h1>Clothes you'll keep reaching for.</h1>
-        <p>A small, considered range of shirts, dresses, footwear, and accessories. Made to last, priced fairly.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary btn-lg" href="/shop.html">Shop the collection</a>
-          <a class="btn btn-outline btn-lg" href="#new">See what's new</a>
-        </div>
-        <div class="hero-stats">
-          <div class="stat"><strong>16</strong><span>Pieces in stock</span></div>
-          <div class="stat"><strong>Free</strong><span>Shipping over $150</span></div>
-          <div class="stat"><strong>30-day</strong><span>Easy returns</span></div>
-        </div>
+  <section class="hero-slideshow" id="hero" aria-label="Featured">
+    <div class="hero-slides" id="hero-slides">
+      <div class="hero-slide is-active kb" style="background-image:url(/images/hero/editorial.jpg)"></div>
+      <div class="hero-slide" style="background-image:url(/images/hero/model.jpg)"></div>
+      <div class="hero-slide" style="background-image:url(/images/hero/knit.jpg)"></div>
+      <div class="hero-slide" style="background-image:url(/images/hero/street.jpg)"></div>
+    </div>
+    <div class="hero-scrim"></div>
+    <div class="hero-content wrap hero-intro">
+      <span class="eyebrow">New season, in stock now</span>
+      <h1>Clothes you'll keep reaching for.</h1>
+      <p>A small, considered range of shirts, dresses, footwear, and accessories. Made to last, priced fairly.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="/shop.html">Shop the collection</a>
+        <a class="btn btn-outline btn-lg" href="#new">See what's new</a>
       </div>
-      <div class="hero-media reveal">
-        <img src="/images/products/tartan-shift-dress.webp" alt="The Highland Tartan Dress" />
-        <span class="hero-pill">The Highland Tartan Dress</span>
-      </div>
-    </section>
+    </div>
+    <div class="hero-dots" id="hero-dots" role="tablist" aria-label="Slides"></div>
+  </section>
 
+  <main class="wrap">
     <section class="value-strip reveal">
       <div class="vs"><strong>Free shipping over $150</strong><span>On every order, every time</span></div>
       <div class="vs"><strong>30-day returns</strong><span>Send it back, no fuss</span></div>
@@ -80,7 +79,26 @@
     </section>
 
     <section class="section">
-      <div class="editorial reveal">
+      <div class="section-head reveal">
+        <div>
+          <h2>This season's looks</h2>
+          <p>Pieces, styled and ready to wear.</p>
+        </div>
+      </div>
+      <div class="lookbook reveal">
+        <a class="lb-figure" href="/shop.html?category=Dresses">
+          <img src="/images/hero/studio.jpg" alt="Model in a pink wool coat on a city street" loading="lazy" />
+          <div class="lb-cap"><h3>Womenswear</h3><span>Shop dresses →</span></div>
+        </a>
+        <a class="lb-figure" href="/shop.html?category=Shirts">
+          <img src="/images/hero/rack.jpg" alt="Model in a tailored jacket and tie" loading="lazy" />
+          <div class="lb-cap"><h3>Menswear</h3><span>Shop shirts →</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="editorial is-photo reveal">
         <div class="editorial-copy">
           <span class="eyebrow">Our approach</span>
           <h2>Fewer, better pieces.</h2>
@@ -88,7 +106,7 @@
           <a class="btn btn-outline" href="/shop.html">Browse the collection</a>
         </div>
         <div class="editorial-media">
-          <img src="/images/products/pea-wrap-dress.webp" alt="The Polka Tea Dress" loading="lazy" />
+          <img src="/images/hero/storefront.jpg" alt="Inside the Loomwell studio, garments on rails" loading="lazy" />
         </div>
       </div>
     </section>
