@@ -2,6 +2,9 @@
 
 const db = require('./db');
 
+const FREE_SHIP_THRESHOLD_CENTS = 15000;
+const SHIP_FLAT_CENTS = 895;
+
 function toApi(order, items) {
   return {
     id: order.id,
@@ -33,7 +36,7 @@ function validateShipping(shipping) {
   }
 }
 
-function priceCart(items) {
+function priceCart(items, { allowOversell = false } = {}) {
   if (!Array.isArray(items) || items.length === 0) {
     throw { status: 400, error: 'Your cart is empty.' };
   }
@@ -47,7 +50,7 @@ function priceCart(items) {
     if (!product) {
       throw { status: 400, error: 'A product in your cart no longer exists.' };
     }
-    if (product.stock < qty) {
+    if (!allowOversell && product.stock < qty) {
       throw { status: 409, error: `Only ${product.stock} of "${product.name}" left in stock.` };
     }
     totalCents += product.price_cents * qty;
@@ -56,9 +59,25 @@ function priceCart(items) {
   return { lineItems, totalCents };
 }
 
-function createOrder({ userId = null, items, shipping, paymentMethod = 'manual', paymentId = null }) {
+function computeTotals(items, { allowOversell = false } = {}) {
+  const { lineItems, totalCents: subtotalCents } = priceCart(items, { allowOversell });
+  const shippingCents = subtotalCents >= FREE_SHIP_THRESHOLD_CENTS ? 0 : SHIP_FLAT_CENTS;
+  return { lineItems, subtotalCents, shippingCents, totalCents: subtotalCents + shippingCents };
+}
+
+// `force` is used after a payment has already succeeded (PayPal/Stripe): the
+// order must never be lost to a stock race, so stock checks are skipped and
+// the decrement is clamped at zero.
+function createOrder({
+  userId = null,
+  items,
+  shipping,
+  paymentMethod = 'manual',
+  paymentId = null,
+  force = false,
+}) {
   validateShipping(shipping);
-  const { lineItems, totalCents } = priceCart(items);
+  const { lineItems, totalCents } = computeTotals(items, { allowOversell: force });
 
   const tx = db.transaction(() => {
     const info = db
@@ -82,7 +101,7 @@ function createOrder({ userId = null, items, shipping, paymentMethod = 'manual',
     const insertItem = db.prepare(
       `INSERT INTO order_items (order_id, product_id, name, price_cents, quantity) VALUES (?, ?, ?, ?, ?)`
     );
-    const decStock = db.prepare('UPDATE products SET stock = stock - ? WHERE id = ?');
+    const decStock = db.prepare('UPDATE products SET stock = MAX(0, stock - ?) WHERE id = ?');
     for (const { product, qty } of lineItems) {
       insertItem.run(orderId, product.id, product.name, product.price_cents, qty);
       decStock.run(qty, product.id);
@@ -96,4 +115,4 @@ function createOrder({ userId = null, items, shipping, paymentMethod = 'manual',
   return toApi(order, orderItems);
 }
 
-module.exports = { toApi, validateShipping, priceCart, createOrder };
+module.exports = { toApi, validateShipping, priceCart, computeTotals, createOrder };

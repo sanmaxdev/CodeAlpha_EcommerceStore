@@ -10,12 +10,16 @@ const authRoutes = require('./src/routes/auth');
 const productRoutes = require('./src/routes/products');
 const orderRoutes = require('./src/routes/orders');
 const adminRoutes = require('./src/routes/admin');
-const paymentRoutes = require('./src/routes/payments');
+const { router: paymentRoutes, stripeWebhook } = require('./src/routes/payments');
 
 seed();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// Stripe webhook needs the raw body for signature verification, so it is
+// registered before the JSON body parser.
+app.post('/api/payments/stripe/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
 app.use(express.json());
 

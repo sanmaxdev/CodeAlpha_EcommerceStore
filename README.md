@@ -16,7 +16,7 @@ Shoppers can browse a clothing catalog, view product details, manage a cart, reg
 - **Product details page** with quantity selector, stock status, and related items
 - **Shopping cart** (add / update quantity / remove) with live totals and a free-shipping threshold
 - **Guest checkout** — buy without an account, or log in for faster checkout and order history
-- **PayPal payment** at checkout (with a built-in "Place order" fallback), plus user registration & login (bcrypt + JWT)
+- **PayPal and Stripe** payment at checkout (choose either), with a built-in "Place order" fallback; plus user registration & login (bcrypt + JWT)
 - **Order processing** — validates stock, computes totals on the server, decrements inventory, saves the order
 - **Order history** for logged-in users
 - **Policy pages** (privacy, terms, shipping & returns) and a contact page
@@ -71,20 +71,30 @@ Admin:    admin@loomwell.co / admin1234
 
 Log in as the admin and open **/admin.html** (an "Admin" link also appears in the header). Or create your own shopper account from the **Create account** page.
 
-### Enabling PayPal (optional)
+### Enabling payments (optional)
 
-The store works out of the box with a "Place order" checkout. To turn on real PayPal Buttons:
+The store works out of the box with a "Place order" checkout. Configure either or both providers in `.env` (copy from `.env.example`) and the checkout shows a payment-method selector automatically.
 
-1. Create REST API credentials at the [PayPal Developer dashboard](https://developer.paypal.com/dashboard/applications/sandbox) (use a **Sandbox** app for testing).
-2. Copy `.env.example` to `.env` and fill in:
+**PayPal** — create Sandbox REST credentials at the [PayPal Developer dashboard](https://developer.paypal.com/dashboard/applications/sandbox):
 
-   ```
-   PAYPAL_CLIENT_ID=your-client-id
-   PAYPAL_CLIENT_SECRET=your-client-secret
-   PAYPAL_MODE=sandbox        # or "live"
-   ```
+```
+PAYPAL_CLIENT_ID=your-client-id
+PAYPAL_CLIENT_SECRET=your-client-secret
+PAYPAL_MODE=sandbox        # or "live"
+```
 
-3. Restart the server. The checkout page will now show PayPal Buttons; payments are created and captured server-side via the PayPal REST API.
+Orders are created and captured server-side via the PayPal REST API.
+
+**Stripe** — create test API keys at the [Stripe dashboard](https://dashboard.stripe.com/test/apikeys):
+
+```
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...   # optional, for the webhook below
+```
+
+Stripe uses hosted **Checkout**: the server creates a Checkout Session, the customer pays on Stripe, and the order is finalised on return (idempotently). For production, also point a Stripe webhook at `POST /api/payments/stripe/webhook` (event `checkout.session.completed`) so orders are recorded even if the customer closes the tab.
+
+Restart the server after editing `.env`.
 
 ---
 
@@ -99,6 +109,7 @@ CodeAlpha_EcommerceStore/
 │   ├── auth.js             # JWT + auth/admin middleware
 │   ├── orders-service.js   # Shared order validation + creation
 │   ├── lib/paypal.js       # PayPal REST helper (token/create/capture)
+│   ├── lib/stripe.js       # Stripe client helper
 │   └── routes/
 │       ├── auth.js         # register / login / me
 │       ├── products.js     # list / detail / categories
@@ -157,9 +168,12 @@ Guest orders are stored with a null `user_id`; signed-in orders are linked to th
 
 | Method | Endpoint                          | Description                                  |
 | ------ | --------------------------------- | -------------------------------------------- |
-| GET    | `/payments/config`                | Whether PayPal is enabled + client id        |
+| GET    | `/payments/config`                | Which providers are enabled (PayPal/Stripe)  |
 | POST   | `/payments/paypal/create-order`   | Create a PayPal order for the cart           |
 | POST   | `/payments/paypal/capture-order`  | Capture payment and store the local order    |
+| POST   | `/payments/stripe/create-session` | Create a Stripe Checkout Session             |
+| POST   | `/payments/stripe/confirm`        | Finalise the order after a Stripe redirect   |
+| POST   | `/payments/stripe/webhook`        | Stripe webhook (checkout.session.completed)  |
 
 ### Admin *(require an admin `Authorization: Bearer <token>`)*
 
