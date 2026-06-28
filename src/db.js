@@ -61,9 +61,20 @@ db.exec(`
     quantity    INTEGER NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS reviews (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    user_id     INTEGER NOT NULL REFERENCES users(id),
+    rating      INTEGER NOT NULL,
+    body        TEXT    NOT NULL,
+    created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(product_id, user_id)
+  );
+
   CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
   CREATE INDEX IF NOT EXISTS idx_orders_user      ON orders(user_id);
   CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
+  CREATE INDEX IF NOT EXISTS idx_reviews_product  ON reviews(product_id);
 `);
 
 function ensureColumn(table, column, definition) {

@@ -13,7 +13,7 @@ Shoppers can browse a clothing catalog, view product details, manage a cart, reg
 ### Storefront
 - **Landing page** with a lifestyle hero slideshow, featured products, lookbook, and testimonials
 - **Dedicated Shop page** with rich filters: category, price range, minimum rating, in-stock-only, search, and sorting
-- **Product details page** with quantity selector, stock status, and related items
+- **Product details page** with quantity selector, stock status, related items, and **verified-buyer reviews** (only customers who purchased the item can review it; one review each, ratings drive the product's star rating)
 - **Shopping cart** (add / update quantity / remove) with live totals and a free-shipping threshold
 - **Guest checkout** — buy without an account, or log in for faster checkout and order history
 - **PayPal and Stripe** payment at checkout (choose either), with a built-in "Place order" fallback; plus user registration & login (bcrypt + JWT)
@@ -153,6 +153,8 @@ Base URL: `http://localhost:4000/api`
 | GET    | `/products`            | List products. Query: `category`, `search`, `sort`, `featured` |
 | GET    | `/products/categories` | Distinct categories with counts                                |
 | GET    | `/products/:id`        | Single product + related items                                 |
+| GET    | `/products/:id/reviews`| Reviews + summary (+ the caller's review eligibility)           |
+| POST   | `/products/:id/reviews`| Add a review *(auth; verified buyers only, one per product)*    |
 
 ### Orders
 

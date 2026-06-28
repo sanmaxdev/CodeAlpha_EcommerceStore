@@ -26,6 +26,7 @@
       if (crumbName) crumbName.textContent = product.name;
       renderProduct(product);
       renderRelated(related);
+      loadReviews();
     } catch (err) {
       renderError(err.message);
     }
@@ -101,6 +102,144 @@
     }
     relatedGrid.innerHTML = related.map(window.UI.productCard).join('');
     window.UI.revealStagger(relatedGrid);
+  }
+
+  // ---- Reviews ----------------------------------------------------------
+  const E = (s) => window.UI.escapeHtml(s);
+
+  function fmtDate(s) {
+    const d = new Date(String(s).replace(' ', 'T') + 'Z');
+    return isNaN(d) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+  function starRow(n) {
+    return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);
+  }
+
+  async function loadReviews() {
+    const sec = document.getElementById('reviews-section');
+    if (!sec) return;
+    try {
+      const data = await window.api.get('/products/' + id + '/reviews', true);
+      renderReviews(sec, data);
+    } catch (e) {
+      sec.style.display = 'none';
+    }
+  }
+
+  function starInputHtml() {
+    let h = '<div class="star-input" id="star-input" role="radiogroup" aria-label="Your rating">';
+    for (let i = 1; i <= 5; i++) {
+      h += `<button type="button" data-v="${i}" aria-label="${i} star${i > 1 ? 's' : ''}">★</button>`;
+    }
+    return h + '</div>';
+  }
+
+  function writeArea(el) {
+    if (!el.loggedIn) {
+      return `<div class="review-note">Only verified buyers can write a review.
+        <a href="/login.html?redirect=${encodeURIComponent('/product.html?id=' + id)}">Log in</a>
+        if you've purchased this item.</div>`;
+    }
+    if (el.canReview) {
+      return `<div class="review-form">
+        <h3>Write a review</h3>
+        <div class="alert error" id="review-alert"></div>
+        ${starInputHtml()}
+        <div class="field">
+          <textarea id="review-body" rows="3" maxlength="1000" placeholder="How is the fit and quality? Anything worth knowing?"></textarea>
+        </div>
+        <button class="btn btn-primary" id="review-submit" type="button">Submit review</button>
+      </div>`;
+    }
+    if (el.hasReviewed) {
+      return `<div class="review-note">Thanks for reviewing this product.</div>`;
+    }
+    return `<div class="review-note">Only verified buyers can review this product. Once you've purchased it, your review will appear here.</div>`;
+  }
+
+  function reviewCard(r) {
+    return `<div class="review-card">
+      <div class="review-top">
+        <span class="stars">${starRow(r.rating)}</span>
+        <span class="review-author">${E(r.author)}</span>
+        <span class="verified-badge">${window.UI.icon('check', 12)} Verified buyer</span>
+        <span class="review-date">${fmtDate(r.createdAt)}</span>
+      </div>
+      <p class="review-body">${E(r.body)}</p>
+    </div>`;
+  }
+
+  function renderReviews(sec, data) {
+    const { reviews, summary, eligibility } = data;
+    const head = `<div class="section-head"><div><h2>Customer reviews</h2></div></div>`;
+    const sum = summary.count
+      ? `<div class="reviews-summary">
+           <span class="big">${summary.average.toFixed(1)}</span>
+           <span class="stars">${starRow(Math.round(summary.average))}</span>
+           <span class="count">Based on ${summary.count} verified ${summary.count === 1 ? 'review' : 'reviews'}</span>
+         </div>`
+      : `<div class="reviews-summary"><span class="count">No reviews yet. Verified buyers can be the first to review.</span></div>`;
+    const list = reviews.length ? `<div class="review-list">${reviews.map(reviewCard).join('')}</div>` : '';
+    sec.innerHTML = head + sum + writeArea(eligibility) + list;
+    wireForm(sec);
+  }
+
+  function wireForm(sec) {
+    let selected = 0;
+    const si = sec.querySelector('#star-input');
+    if (si) {
+      si.querySelectorAll('button').forEach((b) => {
+        b.addEventListener('click', () => {
+          selected = Number(b.dataset.v);
+          si.querySelectorAll('button').forEach((x) =>
+            x.classList.toggle('on', Number(x.dataset.v) <= selected)
+          );
+        });
+      });
+    }
+    const submit = sec.querySelector('#review-submit');
+    if (submit) {
+      submit.addEventListener('click', async () => {
+        const alertEl = sec.querySelector('#review-alert');
+        alertEl.className = 'alert';
+        const body = sec.querySelector('#review-body').value.trim();
+        if (!selected) {
+          alertEl.textContent = 'Please choose a star rating.';
+          alertEl.className = 'alert error show';
+          return;
+        }
+        if (body.length < 3) {
+          alertEl.textContent = 'Please write a short review.';
+          alertEl.className = 'alert error show';
+          return;
+        }
+        submit.disabled = true;
+        submit.textContent = 'Submitting...';
+        try {
+          const data = await window.api.post('/products/' + id + '/reviews', { rating: selected, body }, true);
+          window.UI.toast('Thanks for your review', 'success');
+          renderReviews(sec, {
+            reviews: data.reviews,
+            summary: data.summary,
+            eligibility: { loggedIn: true, purchased: true, hasReviewed: true, canReview: false },
+          });
+          updateHeaderRating(data.summary);
+        } catch (err) {
+          alertEl.textContent = err.message;
+          alertEl.className = 'alert error show';
+          submit.disabled = false;
+          submit.textContent = 'Submit review';
+        }
+      });
+    }
+  }
+
+  function updateHeaderRating(summary) {
+    const el = document.querySelector('.detail-info .rating');
+    if (el && summary.count) {
+      el.innerHTML = `<span class="stars">${starRow(Math.round(summary.average))}</span>
+        <span>${summary.average.toFixed(1)} · ${summary.count} review${summary.count === 1 ? '' : 's'}</span>`;
+    }
   }
 
   function init() {
